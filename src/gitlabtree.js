@@ -16,7 +16,23 @@ var GitlabTree = (function($, win) {
     initContainerML,
     $jstree;
 
+  function getUrlParam(url, name) {
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = url.split('?')[1].match(reg);
+    if(r!=null)return  unescape(r[2]); return null;
+  }
+
   var getPrivateToken = function(dtd) {
+    // fix 8.14.1 can't get private_token
+    var token_href = $("link[rel=alternate]").attr('href');
+    if (token_href && /\?/.test(token_href)) {
+      token = getUrlParam(token_href, 'private_token');
+      if (token) {
+        private_token = token;
+        dtd.resolve(true)
+        return;
+      }
+    }
     var arrXmlNode;
     var objXml = {};
     var wholeText;
